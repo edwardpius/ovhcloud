@@ -1,0 +1,42 @@
+# Copy to terraform.tfvars and fill in.
+
+service_name    = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # Public Cloud project ID
+gitops_repo_url = "https://github.com/edwardpius/ovhcloud.git"
+
+# --- Active: US West dev cluster, cost-optimised (~$79/month) ---
+# Needs an OVHcloud US account (us.ovhcloud.com) and OVHcloud US API credentials.
+# US-WEST-OR-1 (Hillsboro, Oregon) has one availability zone and only the Free plan.
+ovh_endpoint       = "ovh-us"
+region             = "US-WEST-OR-1"
+name_prefix        = "dev"
+kube_plan          = "free" # $0 control plane (99.5% uptime target, no SLA)
+availability_zones = []     # single-zone region: one node pool
+
+node_flavor    = "d2-8" # 4 vCPU / 8 GB, shared CPU; cheapest flavor that fits Argo CD + Traefik + apps
+node_count     = 2      # minimum nodes; enough for rolling upgrades
+node_max_count = 3      # autoscaler can add a third node under load
+
+lb_size       = "S" # 200 Mbit/s; one load balancer for all apps via Traefik
+gateway_model = "S" # node egress (image pulls) + required for the public LB
+
+# --- Alternative: EU setup A, lean / dev (~€124/month) ---
+# ovh_endpoint  = "ovh-eu"
+# region        = "GRA11"
+# kube_plan     = "free"
+# node_flavor   = "b3-8"
+# node_count    = 3
+# lb_size       = "S"
+# gateway_model = "S"
+
+# --- Alternative: EU setup B, production (~€324/month). Standard plan isn't offered in the US ---
+# ovh_endpoint  = "ovh-eu"
+# kube_plan     = "standard"
+# node_flavor   = "b3-16"
+# lb_size       = "M"
+# gateway_model = "M"
+
+# --- Alternative: EU production across 3 availability zones (Standard plan) ---
+# region             = "EU-WEST-PAR"
+# kube_plan          = "standard"
+# availability_zones = ["eu-west-par-a", "eu-west-par-b", "eu-west-par-c"]
+# node_count         = 1   # per zone
